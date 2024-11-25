@@ -1,12 +1,24 @@
-import conectarAoBanco from "../config/dbConfig.js";
+import { ObjectId } from "mongodb";
+import connectDB from "../config/dbConfig.js";
 
 // variavel para conexão com banco
-const conexao = await conectarAoBanco(process.env.STRING_CONEXAO);
+const connection = await connectDB(process.env.STRING_CONNECTION);
 
-async function getTodosPosts() {
-  const db = conexao.db("instabytes");
-  const colecao = db.collection("posts");
-  return colecao.find().toArray();
+export async function getAllPosts() {
+  const db = connection.db("instabytes");
+  const posts = db.collection("posts");
+  return posts.find().toArray();
 }
 
-export default getTodosPosts;
+export async function createPost(newPost) {
+  const db = connection.db("instabytes");
+  const posts = db.collection("posts");
+  return posts.insertOne(newPost);
+}
+
+export async function updatePost(id, newPost) {
+  const db = connection.db("instabytes");
+  const posts = db.collection("posts");
+  const objId = ObjectId.createFromHexString(id);
+  return posts.updateOne({_id: new ObjectId(objId)}, { $set: newPost });
+}
