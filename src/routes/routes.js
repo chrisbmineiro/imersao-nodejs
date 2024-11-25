@@ -1,5 +1,6 @@
 import express from "express";
 import multer from "multer";
+import cors from "cors";
 import {
   listPosts,
   addNewPost,
@@ -7,6 +8,11 @@ import {
   updateNewPost,
 } from "../controllers/postsController.js";
 import listUsers from "../controllers/usersController.js";
+
+const corsOptions = {
+  origin: "http://localhost:8000",
+  optionsSuccessStatus: 200,
+}
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -26,6 +32,7 @@ const upload = multer({ storage: storage });
 
 export default function routes(app) {
   app.use(express.json());
+  app.use(cors(corsOptions));
   // criando rotas para posts
   app.get("/posts", listPosts);
   // listar usuarios
@@ -36,18 +43,18 @@ export default function routes(app) {
   app.post("/upload", upload.single("imagem"), uploadImage);
   // metodo para atualizar upload
   app.put("/upload/:id", updateNewPost);
-  }
-  // metodo para deletar posts
-  // app.delete("/posts/:id", (req, res) => {
-  //   const index = buscaPostPorID(req.params.id);
-  //   posts.splice(index, 1);
-  //   res.status(200).json(posts);
-  // });
-  // metodo para atualizar posts
-  // app.put("/posts/:id", (req, res) => {
-  //   const index = buscaPostPorID(req.params.id);
-  //   posts[index].descricao = req.body.descricao;
-  //   posts[index].imgUrl = req.body.imgUrl;
-  //   posts[index].alt = req.body.alt;
-  //   res.status(200).json(posts);
-  // });
+}
+// metodo para deletar posts
+// app.delete("/posts/:id", (req, res) => {
+//   const index = buscaPostPorID(req.params.id);
+//   posts.splice(index, 1);
+//   res.status(200).json(posts);
+// });
+// metodo para atualizar posts
+// app.put("/posts/:id", (req, res) => {
+//   const index = buscaPostPorID(req.params.id);
+//   posts[index].descricao = req.body.descricao;
+//   posts[index].imgUrl = req.body.imgUrl;
+//   posts[index].alt = req.body.alt;
+//   res.status(200).json(posts);
+// });

@@ -1,5 +1,6 @@
 import { getAllPosts, createPost, updatePost } from "../models/postsModel.js";
 import fs from "fs";
+import generateDescriptionWithGemini from "../services/serviceGemini.js";
 
 export async function listPosts(req, res) {
   // chamar função para busca
@@ -35,23 +36,21 @@ export async function uploadImage(req, res) {
     res.status(500).json({ Erro: "Falha na requisição" });
   }
 }
-// funcção para atualizar post
+// função para atualizar post
 export async function updateNewPost(req, res) {
   const id = req.params.id;
   const imageUrl = `http://localhost:3000/${id}.png`;
-  const updatedPost = {
-    descricao: req.body.descricao,
-    imgUrl: imageUrl,
-    alt: req.body.alt,
-  };
   try {
+    const imageBuffer = fs.readFileSync(`uploads/${id}.png`);
+    const description = await generateDescriptionWithGemini(imageBuffer);
+    const updatedPost = {
+      descricao: description,
+      imgUrl: imageUrl,
+      alt: req.body.alt,
+    };
     const postCreated = await updatePost(id, updatedPost);
     res.status(200).json(postCreated);
   } catch (error) {
     res.status(500).send(error.message);
   }
 }
-// funcção para atualizar post
-// export function buscaPostPorID(id) {
-//   return posts.findIndex((post) => post.id == id);
-// }
